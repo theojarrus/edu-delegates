@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        adapter.addDelegate(new TitleAdapterDelegate());
         adapter.addDelegate(new UserAdapterDelegate((item, position) -> {
             adapter.submitList(getNewUsers());
         }));

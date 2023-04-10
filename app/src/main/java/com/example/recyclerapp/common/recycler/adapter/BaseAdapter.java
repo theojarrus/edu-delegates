@@ -1,5 +1,7 @@
 package com.example.recyclerapp.common.recycler.adapter;
 
+import android.content.Context;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -24,12 +26,20 @@ public class BaseAdapter extends ListAdapter<DelegateItem, ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return delegates.get(viewType).onCreateViewHolder(parent);
+        if (viewType >= 0) {
+            return delegates.get(viewType).onCreateViewHolder(parent);
+        } else {
+            return new EmptyViewHolder(parent.getContext());
+        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        delegates.get(getItemViewType(position)).onBindViewHolder(holder, getItem(position));
+        try {
+            delegates.get(getItemViewType(position)).onBindViewHolder(holder, getItem(position));
+        } catch (IndexOutOfBoundsException exception) {
+            exception.printStackTrace();
+        }
     }
 
     @Override
@@ -39,10 +49,17 @@ public class BaseAdapter extends ListAdapter<DelegateItem, ViewHolder> {
                 return i;
             }
         }
-        throw new RuntimeException("No delegate found for item on position " + position);
+        return -1;
     }
 
     public void addDelegate(AdapterDelegate delegate) {
         delegates.add(delegate);
+    }
+}
+
+class EmptyViewHolder extends ViewHolder {
+
+    public EmptyViewHolder(Context context) {
+        super(new View(context));
     }
 }
